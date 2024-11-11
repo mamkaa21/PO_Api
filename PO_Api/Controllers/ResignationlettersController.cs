@@ -13,7 +13,26 @@ namespace PO_Api.Controllers
             this._context = context;
         }
 
-        [HttpPost("GetResignationletters")]
+        [HttpGet("GetResignationletterById")]
+        public async Task<Resignationletter> GetResignationletterById(int id)
+        {
+            await Task.Delay(100);
+            var letter = _context.Resignationletters.FirstOrDefault(s => s.Id == id);
+            if (letter == null)
+            {
+                return null;
+            }
+            Resignationletter getResignationletter = new Resignationletter()
+            {
+                Id = letter.Id,
+                Reason = letter.Reason,
+                Date = letter.Date,
+                IdStudent = letter.IdStudent,
+            };
+            return getResignationletter;
+        }
+
+        [HttpGet("GetResignationletters")]
         public async Task<List<Resignationletter>> GetResignationletters()
         {
             await Task.Delay(100);
@@ -29,6 +48,28 @@ namespace PO_Api.Controllers
             return Ok($"Добавлено новое заявление на отсичление - {resignationletter.Reason}  {resignationletter.Date}");
         }
 
+        [HttpPut("EditResignationletter")]
+        public async Task<ActionResult> EditResignationletter(ResignationletterModel resignationletter)
+        {
+            var letterNew = new Resignationletter { Date = resignationletter.Date, IdStudent = resignationletter.IdStudent, Reason = resignationletter.Reason };
+            _context.Resignationletters.Update(letterNew);
+            await _context.SaveChangesAsync();
+            return Ok($"Заявление на отсичление обновлен - {resignationletter.Reason}  {resignationletter.Date}");
+        }
 
+        [HttpDelete("DeleteResignationletter")]
+        public async Task<ActionResult> DeleteResignationletter(ResignationletterModel resignationletter)
+        {
+            var letter = _context.Resignationletters.FirstOrDefault(s => s.Id == resignationletter.Id);
+            if (resignationletter.Id == letter.Id)
+            {
+                var letterNew = new Resignationletter { Date = resignationletter.Date, IdStudent = resignationletter.IdStudent, Reason = resignationletter.Reason };
+                _context.Resignationletters.Remove(letterNew);
+                await _context.SaveChangesAsync();
+                return Ok("Заявнет");
+            }
+            else
+                return BadRequest("Ошика");
+        }
     }
 }

@@ -13,7 +13,29 @@ namespace PO_Api.Controllers
             this._context = context;
         }
 
-        [HttpPost("GetStudents")]
+        [HttpGet("GetStudentById")]
+        public async Task<Student> GetStudentById(int? id)
+        {
+
+            var student = _context.Students.FirstOrDefault(s => s.Id == id);
+            await Task.Delay(100);
+            if (student == null)
+            {
+                return null;
+            }
+            Student getStudent = new Student()
+            {
+                Id = student.Id,
+                Firstname = student.Firstname,
+                Lastname = student.Lastname,
+                Age = student.Age,
+                Debts = student.Debts
+            };
+            return getStudent;
+        }
+
+
+        [HttpGet("GetStudents")]
         public async Task<List<Student>> GetStudents()
         {
             await Task.Delay(100);
@@ -28,7 +50,7 @@ namespace PO_Api.Controllers
             return Ok($"Добавлен новый студент - {student.Firstname} {student.Lastname}");
         }
 
-        [HttpPost("EditStudent")]
+        [HttpPut("EditStudent")]
         public async Task<ActionResult> EditStudent(Student student)
         {
             _context.Students.Update(student);
@@ -36,12 +58,18 @@ namespace PO_Api.Controllers
             return Ok($"Студент обновлен - {student.Firstname} {student.Lastname}");
         }
 
-        [HttpPost("DeleteStudent")]
+        [HttpDelete("DeleteStudent")]
         public async Task<ActionResult> DeleteStudent(Student student)
         {
-            _context.Students.Remove(student);
-            await _context.SaveChangesAsync();
-            return Ok("Студенет");
+            var stu = _context.Students.FirstOrDefault(s => s.Id == student.Id);
+            if (student.Id == stu.Id)
+            {
+                _context.Students.Remove(student);
+                await _context.SaveChangesAsync();
+                return Ok("Студенет");
+            }
+            else
+                return BadRequest("Ошибка");
         }
     }
 }

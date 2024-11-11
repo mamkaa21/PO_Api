@@ -13,7 +13,7 @@ namespace PO_Api.Controllers
             this._context = context;
         }
 
-        [HttpPost("GetUsers")]
+        [HttpGet("GetUsers")]
         public async Task<List<User>> GetUsers()
         {
             await Task.Delay(100);
