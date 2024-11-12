@@ -14,20 +14,40 @@ namespace PO_Api.Controllers
         }
 
         [HttpGet("GetUsers")]
-        public async Task<List<User>> GetUsers()
+        public async Task<ActionResult<List<User>>> GetUsers()
         {
             await Task.Delay(100);
-            return new List<User>(_context.Users.ToList());
+            return Ok(_context.Users.ToList());
         }
 
         [HttpPost("AddUser")]
         public async Task<ActionResult> AddUser (User user)
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            return Ok($"Добавлен новый пользователь - {user.Login} {user.Password}");
+            if (string.IsNullOrEmpty(user.Login))
+                return BadRequest("Введите логин");
+            var check = _context.Users.FirstOrDefault(s => s.Login == user.Login);
+            if (check == null)
+            {
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+                return Ok($"Добавлен новый пользователь - {user.Login} {user.Password}");
+            }
+            else
+                return BadRequest("Такой пользователь уже существует");
         }
 
-      
+        [HttpPost("CheckLoginPassword")]
+        public async Task<ActionResult<User>> CheckLoginPassword (User user)
+        {
+            if (string.IsNullOrEmpty(user.Login) || string.IsNullOrEmpty(user.Password))
+                return BadRequest("Введите логин и пароль");
+            var check = _context.Users.FirstOrDefault(s => s.Login == user.Login && s.Password == user.Password);
+            if (check == null)
+                return NotFound("Такой не найден");
+            else
+                return Ok(check);
+        }
+
+
     }
 }

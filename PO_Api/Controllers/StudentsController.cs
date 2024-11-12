@@ -13,25 +13,13 @@ namespace PO_Api.Controllers
             this._context = context;
         }
 
-        [HttpGet("GetStudentById")]
+        [HttpGet("GetStudentById/{id}")]
         public async Task<Student> GetStudentById(int? id)
         {
 
             var student = _context.Students.FirstOrDefault(s => s.Id == id);
             await Task.Delay(100);
-            if (student == null)
-            {
-                return null;
-            }
-            Student getStudent = new Student()
-            {
-                Id = student.Id,
-                Firstname = student.Firstname,
-                Lastname = student.Lastname,
-                Age = student.Age,
-                Debts = student.Debts
-            };
-            return getStudent;
+            return student;
         }
 
 
