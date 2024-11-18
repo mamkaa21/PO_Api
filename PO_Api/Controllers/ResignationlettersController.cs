@@ -57,19 +57,14 @@ namespace PO_Api.Controllers
             return Ok($"Заявление на отсичление обновлен - {resignationletter.Reason}  {resignationletter.Date}");
         }
 
-        [HttpDelete("DeleteResignationletter")]
-        public async Task<ActionResult> DeleteResignationletter(ResignationletterModel resignationletter)
+        [HttpDelete("DeleteResignationletter/{id}")]
+        public async Task<ActionResult> DeleteResignationletter(int id)
         {
-            var letter = _context.Resignationletters.FirstOrDefault(s => s.Id == resignationletter.Id);
-            if (resignationletter.Id == letter.Id)
-            {
-                var letterNew = new Resignationletter { Date = resignationletter.Date, IdStudent = resignationletter.IdStudent, Reason = resignationletter.Reason };
-                _context.Resignationletters.Remove(letterNew);
-                await _context.SaveChangesAsync();
-                return Ok("Заявнет");
-            }
-            else
-                return BadRequest("Ошика");
+            var letter = _context.Resignationletters.FirstOrDefault(s => s.Id == id);
+            _context.Resignationletters.Remove(letter);
+            await _context.SaveChangesAsync();
+            return Ok("Заявнет");
+
         }
     }
 }

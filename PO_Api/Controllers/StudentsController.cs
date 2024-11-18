@@ -46,18 +46,14 @@ namespace PO_Api.Controllers
             return Ok($"Студент обновлен - {student.Firstname} {student.Lastname}");
         }
 
-        [HttpDelete("DeleteStudent")]
-        public async Task<ActionResult> DeleteStudent(Student student)
+        [HttpDelete("DeleteStudent/{id}")]
+        public async Task<ActionResult> DeleteStudent(int id)
         {
-            var stu = _context.Students.FirstOrDefault(s => s.Id == student.Id);
-            if (student.Id == stu.Id)
-            {
-                _context.Students.Remove(student);
-                await _context.SaveChangesAsync();
-                return Ok("Студенет");
-            }
-            else
-                return BadRequest("Ошибка");
+            var stu = _context.Students.FirstOrDefault(s => s.Id == id);
+            _context.Students.Remove(stu);
+            await _context.SaveChangesAsync();
+            return Ok("Студенет");
+
         }
     }
 }
